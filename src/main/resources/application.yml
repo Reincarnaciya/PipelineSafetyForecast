@@ -1,0 +1,11 @@
+spring:
+  application.name: PipelineSafetyForecast
+  datasource:
+    url: jdbc:postgresql://localhost:5432/sensor_data
+    username: monitor
+    password: temp_password
+  jpa:
+    hibernate.ddl-auto: update
+    show-sql: true
+    properties.hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
+
