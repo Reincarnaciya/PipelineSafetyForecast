@@ -1,45 +1,78 @@
 package gas.pipeline.safety.forecast.util;
 
+import lombok.val;
+import org.apache.commons.math3.distribution.NormalDistribution;
+
 import java.util.HashMap;
 import java.util.Map;
 
 public class BayesianLeakModel {
     private final Map<String, Double> leakProbabilities = new HashMap<>();
-    private final Map<String, Double> priorLeakProbability = new HashMap<>();
-    private final Map<String, Integer> leakCounts = new HashMap<>();
-    private final Map<String, Integer> totalReadings = new HashMap<>();
+
+    private final Map<String, Double> normalMean = new HashMap<>();
+    private final Map<String, Double> normalVariance = new HashMap<>();
+    private final Map<String, Integer> normalCount = new HashMap<>();
+
+    private final Map<String, Double> leakMean = new HashMap<>();
+    private final Map<String, Double> leakVariance = new HashMap<>();
+    private final Map<String, Integer> leakCount = new HashMap<>();
 
     // Обновление вероятности при новом изменении
     public void update(String sensorId, boolean isLeak, double pressure, double temperature) {
-        totalReadings.put(sensorId, totalReadings.getOrDefault(sensorId, 0) + 1);
-
         if (isLeak) {
-            leakCounts.put(sensorId, leakCounts.getOrDefault(sensorId, 0) + 1);
-            if (isLeak) {
-                leakCounts.put(sensorId, leakCounts.getOrDefault(sensorId, 0) + 1);
-            }
-
-            // Баесовское обновление: P(Leak | Data) = P(Data | Leak) * P(Leak) / P(Data)
-            double prior = (double) leakCounts.getOrDefault(sensorId, 0) / totalReadings.get(sensorId);
-
-            priorLeakProbability.put(sensorId, prior);
-
-            //TODO потом сделать через гаусовское распределение
-            double likelihood = calculateLikelihood(pressure, temperature, isLeak);
-            double posterior = (likelihood * prior) / calculateEvidence(pressure, temperature);
-
-            leakProbabilities.put(sensorId, posterior);
+            updateStats(sensorId, pressure, leakMean, leakVariance, leakCount);
+        } else {
+            updateStats(sensorId, pressure, normalMean, normalVariance, normalCount);
         }
+
+        // Расчет вероятности утечки
+        val prior = 0.01;
+        val likelihoodLeak = calculateGaussianLikelihood(
+                pressure,
+                leakMean.getOrDefault(sensorId, 0.0),
+                leakVariance.getOrDefault(sensorId, 1.0)
+        );
+
+        val likelihoodNormal = calculateGaussianLikelihood(
+                pressure,
+                normalMean.getOrDefault(sensorId, 0.8),
+                normalVariance.getOrDefault(sensorId, 1.0)
+        );
+
+        // Формула Байеса
+        val posterior = (likelihoodLeak * prior) /
+                (likelihoodLeak * prior + likelihoodNormal * (1 - prior));
+
+        leakProbabilities.put(sensorId, posterior);
     }
 
-    private double calculateLikelihood(double pressure, double temperature, boolean isLeak) {
-        // P(Data | Leak)
-        return isLeak ? 0.8 : 0.2; // TODO заминить на свои расчеты, а не вот это вот...
+    private void updateStats(String sensorId, double value,
+                             Map<String, Double> meanMap,
+                             Map<String, Double> varMap,
+                             Map<String, Integer> countMap) {
+        val count = countMap.getOrDefault(sensorId, 0);
+        val oldMean = meanMap.getOrDefault(sensorId, 0.0);
+
+        // Актуализация среднего по алгоритму Welford
+        val newMean = oldMean + (value - oldMean) / (count + 1);
+        meanMap.put(sensorId, newMean);
+
+        // Актуализация дисперсии
+        if (count > 0) {
+            val oldVar = varMap.getOrDefault(sensorId, 0.0);
+            val newVar = oldVar + (value - oldMean) * (value - newMean);
+            varMap.put(sensorId, newVar);
+        }
+
+        countMap.put(sensorId, count + 1);
     }
 
-    private double calculateEvidence(double pressure, double temperature) {
-        // P(Data) = sum P(Data | Leak) * P(Leak) + P(Data | not Leak) * P (not Leak)
-        return 1.0; // TODO понадеялся что и так нормально?
+    protected double calculateGaussianLikelihood(double x, double mean, double variance) {
+        if (variance <= 0)
+            variance = 1e-6;
+
+        val dist = new NormalDistribution(mean, Math.sqrt(variance));
+        return dist.density(x);
     }
 
     public double getLeakProbability(String sensorId) {
