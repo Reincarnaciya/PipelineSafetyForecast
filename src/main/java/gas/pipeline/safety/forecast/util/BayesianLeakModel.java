@@ -15,29 +15,26 @@ public class BayesianLeakModel {
 
         if (isLeak) {
             leakCounts.put(sensorId, leakCounts.getOrDefault(sensorId, 0) + 1);
-            if (isLeak) {
-                leakCounts.put(sensorId, leakCounts.getOrDefault(sensorId, 0) + 1);
-            }
-
-            // Баесовское обновление: P(Leak | Data) = P(Data | Leak) * P(Leak) / P(Data)
-            double prior = (double) leakCounts.getOrDefault(sensorId, 0) / totalReadings.get(sensorId);
-
-            priorLeakProbability.put(sensorId, prior);
-
-            //TODO потом сделать через гаусовское распределение
-            double likelihood = calculateLikelihood(pressure, temperature, isLeak);
-            double posterior = (likelihood * prior) / calculateEvidence(pressure, temperature);
-
-            leakProbabilities.put(sensorId, posterior);
         }
+
+        // Баесовское обновление: P(Leak | Data) = P(Data | Leak) * P(Leak) / P(Data)
+        double prior = (double) leakCounts.getOrDefault(sensorId, 0) / totalReadings.get(sensorId);
+
+        priorLeakProbability.put(sensorId, prior);
+
+        //TODO потом сделать через гаусовское распределение
+        double likelihood = calculateLikelihood(pressure, temperature, isLeak);
+        double posterior = (likelihood * prior) / calculateEvidence(pressure, temperature);
+
+        leakProbabilities.put(sensorId, posterior);
     }
 
-    private double calculateLikelihood(double pressure, double temperature, boolean isLeak) {
+    protected double calculateLikelihood(double pressure, double temperature, boolean isLeak) {
         // P(Data | Leak)
         return isLeak ? 0.8 : 0.2; // TODO заминить на свои расчеты, а не вот это вот...
     }
 
-    private double calculateEvidence(double pressure, double temperature) {
+    protected double calculateEvidence(double pressure, double temperature) {
         // P(Data) = sum P(Data | Leak) * P(Leak) + P(Data | not Leak) * P (not Leak)
         return 1.0; // TODO понадеялся что и так нормально?
     }
