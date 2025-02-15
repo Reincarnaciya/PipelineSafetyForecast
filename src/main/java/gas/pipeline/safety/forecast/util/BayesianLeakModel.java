@@ -26,7 +26,7 @@ public class BayesianLeakModel {
         }
 
         // Расчет вероятности утечки
-        val prior = 0.01;
+        val prior = calculatePrior(sensorId);
         val likelihoodLeak = calculateGaussianLikelihood(
                 pressure,
                 leakMean.getOrDefault(sensorId, 0.0),
@@ -63,7 +63,6 @@ public class BayesianLeakModel {
             val newVar = oldVar + (value - oldMean) * (value - newMean);
             varMap.put(sensorId, newVar);
         }
-
         countMap.put(sensorId, count + 1);
     }
 
@@ -76,6 +75,19 @@ public class BayesianLeakModel {
     }
 
     public double getLeakProbability(String sensorId) {
+        if (leakCount.getOrDefault(sensorId, 0) < 2
+                || normalCount.getOrDefault(sensorId, 0) < 2) {
+            return 0.0; // Недостаточно данных
+        }
         return leakProbabilities.getOrDefault(sensorId, 0.0);
+    }
+
+    private double calculatePrior(String sensorId) {
+        val normal = normalCount.getOrDefault(sensorId, 0);
+        val leak = leakCount.getOrDefault(sensorId, 0);
+        val total = normal + leak;
+
+        if (total == 0) return 0.01;
+        return (double) leak / total;
     }
 }

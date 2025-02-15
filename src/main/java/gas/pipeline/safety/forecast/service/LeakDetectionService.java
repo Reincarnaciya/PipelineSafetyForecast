@@ -30,7 +30,7 @@ public class LeakDetectionService {
                 reading.getTemperature()
         );
 
-        if (leakModel.getLeakProbability(reading.getSensorId()) > 0.7) {
+        if (!reading.isLeak() && leakModel.getLeakProbability(reading.getSensorId()) > 0.7) {
             System.out.println("ALERT: Potential leakk detected in sensor " + reading.getSensorId());
         }
     }
