@@ -18,7 +18,7 @@ public class BayesianLeakModel {
     private final Map<String, Integer> leakCount = new HashMap<>();
 
     // Обновление вероятности при новом изменении
-    public void update(String sensorId, boolean isLeak, double pressure, double temperature) {
+    public void update(String sensorId, boolean isLeak, double pressure) {
         if (isLeak) {
             updateStats(sensorId, pressure, leakMean, leakVariance, leakCount);
         } else {
