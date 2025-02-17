@@ -6,5 +6,4 @@ import lombok.Data;
 public class SensorDTO {
     String sensorId;
     double pressure;
-    boolean isLeak;
 }
