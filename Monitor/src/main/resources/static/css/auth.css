@@ -1,0 +1,154 @@
+
+
+/*---------------------------------LOGIN------------------------------------------------- */
+/* Общие стили для страницы */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+/* Контейнер для формы */
+.container {
+    width: 100%;
+    max-width: 400px;
+    padding: 20px;
+}
+
+/* Заголовок */
+h1 {
+    color: #333;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Форма */
+form {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Блок с уведомлениями */
+.alerts {
+    margin-bottom: 15px;
+}
+
+/* Стили для уведомлений */
+.alert {
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.alert-info {
+    background-color: #e3f2fd;
+    color: #1976d2;
+}
+
+.alert-error {
+    background-color: #ffebee;
+    color: #c62828;
+}
+
+/* Стили для полей ввода */
+label {
+    display: block;
+    margin-bottom: 5px;
+    color: #555;
+}
+
+input {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+/* Стили для кнопки */
+button {
+    width: 100%;
+    padding: 10px;
+    background-color: #1976d2;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+button:hover {
+    background-color: #1565c0;
+}
+/* Стили для блока с кнопкой регистрации */
+.register-section {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.register-section p {
+    color: #555;
+    margin-bottom: 10px;
+}
+
+/* Стили для кнопки "Зарегистрироваться" */
+.register-button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #4CAF50; /* Зеленый цвет */
+    color: #fff;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.register-button:hover {
+    background-color: #45a049; /* Темно-зеленый цвет при наведении */
+}
+
+/* Общие стили для кнопок */
+button, .register-button, .login-button {
+    width: 100%;
+    padding: 10px;
+    background-color: #1976d2; /* Синий цвет */
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    text-align: center;
+    text-decoration: none;
+    display: block;
+    transition: background-color 0.3s ease;
+}
+
+button:hover, .register-button:hover, .login-button:hover {
+    background-color: #1565c0; /* Темно-синий цвет при наведении */
+}
+
+/* Стили для кнопки "Зарегистрироваться" */
+.register-button {
+    background-color: #4CAF50; /* Зеленый цвет */
+}
+
+.register-button:hover {
+    background-color: #45a049; /* Темно-зеленый цвет при наведении */
+}
+
+/* Стили для кнопки "Войти" на странице регистрации */
+.login-button {
+    background-color: #1976d2; /* Синий цвет */
+}
+
+.login-button:hover {
+    background-color: #1565c0; /* Темно-синий цвет при наведении */
+}
