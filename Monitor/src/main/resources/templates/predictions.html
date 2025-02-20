@@ -2,39 +2,33 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Прогнозы утечек</title>
-    <style>
-        .container {
-            max-width: 800px;
-            margin: 20px auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th, td {
-            padding: 8px;
-            border: 1px solid #ddd;
-        }
-    </style>
-
+    <link rel="stylesheet" href="/css/predictions.css">
     <meta name="start-time" th:content="${#temporals.format(start, 'yyyy-MM-dd HH:mm')}"/>
     <meta name="end-time" th:content="${#temporals.format(end, 'yyyy-MM-dd HH:mm')}"/>
     <script th:src="@{/scripts/chart/leak-show.js}"></script>
 </head>
 <body>
 <div class="container">
-    <h1>Прогнозы утечек</h1>
-    <form method="get">
-        <label>С: <input name="start" th:value="${#temporals.format(start, 'yyyy-MM-dd HH:mm')}"
-                         type="datetime-local"></label>
-        <label>По: <input name="end" th:value="${#temporals.format(end, 'yyyy-MM-dd HH:mm')}"
-                          type="datetime-local"></label>
-        <button type="submit">Показать</button>
+    <header>
+        <h1>Прогнозы утечек</h1>
+        <form th:action="@{/logout}" method="post">
+            <button type="submit" class="logout-button">Выйти</button>
+        </form>
+    </header>
+
+    <form method="get" class="date-range-form">
+        <div class="form-group">
+            <label>С:</label>
+            <input name="start" th:value="${#temporals.format(start, 'yyyy-MM-dd HH:mm')}" type="datetime-local">
+        </div>
+        <div class="form-group">
+            <label>По:</label>
+            <input name="end" th:value="${#temporals.format(end, 'yyyy-MM-dd HH:mm')}" type="datetime-local">
+        </div>
+        <button type="submit" class="show-button">Показать</button>
     </form>
 
-    <table>
+    <table class="predictions-table">
         <thead>
         <tr>
             <th>Датчик</th>
@@ -45,15 +39,12 @@
         <tbody>
         <tr th:each="p : ${predictions}">
             <td th:text="${p.sensorId}"></td>
-            <!--            <td th:text="${#temporals.format(p.timestamp, 'yyyy-MM-dd\'T\'HH:mm')}"></td>-->
-            <!--<td th:text="${#numbers.formatDecimal(p.leakProbability, 1, 2)}"></td>-->
+            <td th:text="${#temporals.format(p.timestamp, 'yyyy-MM-dd HH:mm')}"></td>
+            <td th:text="${#numbers.formatDecimal(p.leakProbability, 1, 2)}"></td>
         </tr>
         </tbody>
     </table>
-
-    <canvas height="200" id="chart" width="400"></canvas>
-
-
+    <canvas id="chart" width="400" height="200"></canvas>
 </div>
 </body>
 </html>
