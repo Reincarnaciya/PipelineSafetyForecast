@@ -64,7 +64,7 @@ public class Main {
                 val sensorIdEncoded = URLEncoder.encode(ApplicationConfig.SENSOR_ID, StandardCharsets.UTF_8);
                 val pressureEncoded = URLEncoder.encode(String.valueOf(sensor.getPressure()), StandardCharsets.UTF_8);
                 val postDate = String.format(
-                        "sensorId=%s&pressure=%s",
+                        "{sensorId: %s, pressure: %s}",
                         sensorIdEncoded, pressureEncoded
                 );
 
