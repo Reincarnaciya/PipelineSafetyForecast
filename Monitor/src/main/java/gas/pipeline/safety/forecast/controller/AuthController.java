@@ -1,10 +1,17 @@
 package gas.pipeline.safety.forecast.controller;
 
+import gas.pipeline.safety.forecast.dto.AuthDTO;
 import gas.pipeline.safety.forecast.service.RegistrationService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -22,6 +29,7 @@ public class AuthController {
     public String login(
             @RequestParam(value = "error", required = false) String error,
             @RequestParam(value = "logout", required = false) String logout,
+            @RequestParam(value = "registred", required = false) String reg,
             Model model
     ) {
         if (error != null) {
@@ -30,6 +38,9 @@ public class AuthController {
         if (logout != null) {
             model.addAttribute("logout", "Вы успешно вышли из системы.");
         }
+        if (reg != null){
+            model.addAttribute("registred", "Вы успешно зарегистрировались");
+        }
         return "login";
     }
 
@@ -37,13 +48,10 @@ public class AuthController {
 
     @GetMapping("/registration")
     public String registration(
-            @RequestParam(value = "error", required = false) String error,
             @RequestParam(value = "success", required = false) String success,
             Model model
     ) {
-        if (error != null) {
-            model.addAttribute("error", "Ошибка регистрации. Проверьте введенные данные.");
-        }
+
         if (success != null) {
             model.addAttribute("success", "Регистрация прошла успешно!");
         }
@@ -52,25 +60,19 @@ public class AuthController {
 
     @PostMapping("/registration")
     public String registerUser(
-            @RequestParam String username,
-            @RequestParam String email,
-            @RequestParam String password,
-            @RequestParam String confirmPassword,
+            @Valid @ModelAttribute("form") AuthDTO dto,
+            BindingResult result,
             Model model
-    ) {
-        // Проверка паролей
-        if (!password.equals(confirmPassword)) {
-            model.addAttribute("error", "Пароли не совпадают.");
-            return "redirect:/registration?error";
+            ) {
+        boolean isRegistered = registrationService.registerUser(dto.getUsername(), dto.getEmail(), dto.getPassword());
+
+
+        if (result.hasErrors()){
+            model.addAttribute("errors", result.getAllErrors());
+            return "registration";
         }
 
-        // Регистрация пользователя
-        boolean isRegistered = registrationService.registerUser(username, email, password);
-        if (isRegistered) {
-            return "redirect:/registration?success";
-        } else {
-            model.addAttribute("error", "Пользователь с таким именем или email уже существует.");
-            return "redirect:/registration?error";
-        }
+
+        return "redirect:/login?registred";
     }
 }

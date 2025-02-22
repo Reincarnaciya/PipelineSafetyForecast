@@ -11,15 +11,12 @@
 <body>
 <div class="container">
     <h1>Регистрация</h1>
-    <form th:action="@{/registration}" method="POST">
-        <div class="alerts">
-            <div th:if="${success}" class="alert alert-info" role="alert">
-                Регистрация прошла успешно!
+    <form th:action="@{/registration}" method="POST" th:object="${form}">
+            <div th:if="${errors}" class="alert alert-error">
+                <ul>
+                    <li th:each="error : ${errors}" th:text="${error.defaultMessage}"></li>
+                </ul>
             </div>
-            <div th:if="${error}" class="alert alert-error" role="alert">
-                Ошибка регистрации. Проверьте введенные данные.
-            </div>
-        </div>
         <div>
             <label for="username">Имя пользователя:</label>
             <input type="text" id="username" name="username" placeholder="Введите имя пользователя" required />

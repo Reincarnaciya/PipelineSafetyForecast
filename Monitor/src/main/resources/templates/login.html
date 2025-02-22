@@ -15,6 +15,7 @@
         <div class="alerts">
             <div th:if="${logout}" class="alert alert-info" role="alert">Вы вышли</div>
             <div th:if="${error}" class="alert alert-error" role="alert">Ошибка входа</div>
+            <div th:if="${registred}" class="alert alert-error" role="alert">Вы успешно зарегестрировались</div>
         </div>
         <div>
             <label for="username">Имя:</label>
