@@ -2,7 +2,6 @@ package gas.pipeline.safety.forecast.config;
 
 
 import gas.pipeline.safety.forecast.service.EmployeeDetailedServiceImpl;
-import gas.pipeline.safety.forecast.service.LeakDetectionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,7 +24,7 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(); // Используем BCrypt для хэширования паролей
+        return new BCryptPasswordEncoder();
     }
 
     @Autowired

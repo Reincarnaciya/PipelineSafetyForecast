@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class AuthController {
-
     private final RegistrationService registrationService;
 
     @Autowired
@@ -18,10 +17,6 @@ public class AuthController {
         this.registrationService = registrationService;
     }
 
-    @GetMapping(value = {"", "/index", "/"})
-    public String main(){
-        return "redirect:/predictions";
-    }
 
     @GetMapping("/login")
     public String login(

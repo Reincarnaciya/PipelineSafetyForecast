@@ -32,6 +32,9 @@ dependencies {
 
     // Apache Commons
     implementation 'org.apache.commons:commons-math3:3.6.1'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+    testImplementation 'org.springframework.security:spring-security-test'
 
     // Lombok
     compileOnly 'org.projectlombok:lombok:1.18.30'
