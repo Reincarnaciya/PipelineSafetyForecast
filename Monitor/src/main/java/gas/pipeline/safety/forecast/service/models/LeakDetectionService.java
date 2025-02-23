@@ -2,6 +2,7 @@ package gas.pipeline.safety.forecast.service.models;
 
 
 import gas.pipeline.safety.forecast.config.ModelsConfig;
+import gas.pipeline.safety.forecast.config.PressureModelsConfig;
 import gas.pipeline.safety.forecast.model.SensorReading;
 import gas.pipeline.safety.forecast.repository.SensorReadingRepository;
 import gas.pipeline.safety.forecast.util.PressureAnalyzer;
@@ -15,10 +16,10 @@ import java.util.List;
 @Service
 public class LeakDetectionService extends BaseLeakService {
     private final PressureAnalyzer pressureAnalyzer;
-
     @Autowired
     public LeakDetectionService(SensorReadingRepository sensorReadingRepository,
-                                ModelsConfig modelsConfig, PressureAnalyzer pressureAnalyzer) {
+                                ModelsConfig modelsConfig,
+                                PressureAnalyzer pressureAnalyzer) {
         super(sensorReadingRepository, modelsConfig);
         this.pressureAnalyzer = pressureAnalyzer;
     }

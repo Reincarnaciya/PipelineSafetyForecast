@@ -1,9 +1,9 @@
 package gas.pipeline.safety.forecast.service.models;
 
 import gas.pipeline.safety.forecast.config.ModelsConfig;
-import gas.pipeline.safety.forecast.model.LeakPrediction;
+import gas.pipeline.safety.forecast.model.LeakPredictionCache;
 import gas.pipeline.safety.forecast.model.SensorReading;
-import gas.pipeline.safety.forecast.repository.LeakPredictionRepository;
+import gas.pipeline.safety.forecast.repository.LeakPredictionCacheRepository;
 import gas.pipeline.safety.forecast.repository.SensorReadingRepository;
 import gas.pipeline.safety.forecast.util.BayesianLeakModel;
 import jakarta.annotation.PostConstruct;
@@ -13,12 +13,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Slf4j
 @Service
 public class LeakPredictionsService extends BaseLeakService {
-    private final LeakPredictionRepository predictionRepo;
+    private final LeakPredictionCacheRepository predictionRepo;
 
     private final BayesianLeakModel leakModel;
 
@@ -29,7 +30,7 @@ public class LeakPredictionsService extends BaseLeakService {
 
     @Autowired
     public LeakPredictionsService(SensorReadingRepository sensorReadingRepo,
-                                  LeakPredictionRepository predictionRepo,
+                                  LeakPredictionCacheRepository predictionRepo,
                                   BayesianLeakModel leakModel,
                                   ModelsConfig modelsConfig) {
         super(sensorReadingRepo, modelsConfig);
@@ -71,6 +72,7 @@ public class LeakPredictionsService extends BaseLeakService {
                 );
             }
         }
+
     }
 
     public void processNewReadings(SensorReading reading) {
@@ -87,7 +89,7 @@ public class LeakPredictionsService extends BaseLeakService {
         val totalPredictions = (int) (defaultPredictionsDays * frequency);
 
         for (int i = 1; i < totalPredictions + 1; i++) {
-            val prediction = new LeakPrediction();
+            val prediction = new LeakPredictionCache();
             prediction.setSensorId(sensorId);
             prediction.setTimestamp(LocalDateTime.now().plusMinutes(
                     (long) (i * (1440 / frequency)) // минуты в день / частоту
@@ -98,11 +100,26 @@ public class LeakPredictionsService extends BaseLeakService {
     }
 
     double calculateFrequency(String sensorId) {
+        val opFirstTime = sensorReadingRepo.findFirstTimestamp();
+        val opLastTime = sensorReadingRepo.findLastTimestamp();
+
+        if (opFirstTime.isEmpty() || opLastTime.isEmpty()) {
+            return 0.0;
+        }
+        val difference = ChronoUnit.DAYS.between(opFirstTime.get(), opLastTime.get());
+
+        long trainingDays;
+        if (difference > defaultAverageFrequency) {
+            trainingDays = defaultTrainingDays;
+        } else {
+            trainingDays = difference;
+        }
+
         val count = sensorReadingRepo.countBySensorIdAndTimestampAfter(
                 sensorId,
-                LocalDateTime.now().minusDays(defaultTrainingDays)
+                LocalDateTime.now().minusDays(trainingDays)
         );
-        return count > 0 ? (double) count / defaultTrainingDays : defaultAverageFrequency;
+        return count > 0 ? (double) count / trainingDays : defaultAverageFrequency;
     }
 
 

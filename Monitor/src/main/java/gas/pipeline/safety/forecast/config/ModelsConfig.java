@@ -24,9 +24,4 @@ public class ModelsConfig {
     public BayesianLeakModel bayesianLeakModel() {
         return new BayesianLeakModel();
     }
-
-    @Bean
-    public PressureAnalyzer pressureAnalyzer() {
-        return new PressureAnalyzer();
-    }
 }

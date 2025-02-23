@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', function () {
         {timestamp: new Date(endTime), leakProbability: 0.8}
     ];
 
+
     predictions.forEach(prediction => {
         labels.push(prediction.timestamp.toLocaleString());
         data.push(prediction.leakProbability);

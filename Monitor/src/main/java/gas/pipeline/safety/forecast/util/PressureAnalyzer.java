@@ -20,14 +20,31 @@ public class PressureAnalyzer {
     /**
      * Порог для кумулятивного суммирования отклонений (CUSUM)
      */
-    private static final double CUSUM_THRESHOLD = 5.0;
+    private final double CUSUM_THRESHOLD;
     /**
      * Порог Z-скор для мгновенного обнаружения аномалий
      */
-    private static final double LEAK_THRESHOLD = 3.0;
+    private final double LEAK_THRESHOLD;
+
+    private final int NUM_CALIBRATION_RECORDS;
 
     // Статистика по каждому датчику: ключ - идентификатор датчика
     private final Map<String, SensorStats> sensorStats = new HashMap<>();
+
+
+    public PressureAnalyzer() {
+        this.CUSUM_THRESHOLD = 5.0;
+        this.LEAK_THRESHOLD = 3.0;
+        this.NUM_CALIBRATION_RECORDS = 10;
+    }
+
+    public PressureAnalyzer(double cusumThreshold,
+                            double leakThreshold,
+                            int numCalibrationRecords) {
+        this.CUSUM_THRESHOLD = cusumThreshold;
+        this.LEAK_THRESHOLD = leakThreshold;
+        this.NUM_CALIBRATION_RECORDS = numCalibrationRecords;
+    }
 
     /**
      * Анализирует текущее показание давления для указанного датчика.
@@ -40,8 +57,8 @@ public class PressureAnalyzer {
         // Получаем или создаем статистику для датчика
         val stats = sensorStats.computeIfAbsent(sensorId, k -> new SensorStats());
 
-        // Калибровка: первые 10 измерений для накопления статистики
-        if (stats.getCount() < 10) {
+        // Калибровка: первые NUM_CALIBRATION_RECORDS измерений для накопления статистики
+        if (stats.getCount() < NUM_CALIBRATION_RECORDS) {
             updateStats(stats, pressure);
             return false;
         }

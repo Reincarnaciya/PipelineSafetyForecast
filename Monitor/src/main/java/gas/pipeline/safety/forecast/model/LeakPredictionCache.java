@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Data
-public class LeakPrediction {
+public class LeakPredictionCache {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

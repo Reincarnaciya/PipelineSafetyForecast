@@ -1,6 +1,6 @@
 package gas.pipeline.safety.forecast.controller;
 
-import gas.pipeline.safety.forecast.repository.LeakPredictionRepository;
+import gas.pipeline.safety.forecast.repository.LeakPredictionCacheRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Controller
 @RequiredArgsConstructor
 public class PredictionController {
-    private final LeakPredictionRepository predictionRepo;
+    private final LeakPredictionCacheRepository predictionRepo;
 
     @GetMapping("/predictions")
     public String getPredictions(
