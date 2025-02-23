@@ -2,10 +2,9 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Прогнозы утечек</title>
-    <link rel="stylesheet" href="/css/predictions.css">
+    <link href="/styles/predictions.css" rel="stylesheet">
     <meta name="start-time" th:content="${#temporals.format(start, 'yyyy-MM-dd HH:mm')}"/>
     <meta name="end-time" th:content="${#temporals.format(end, 'yyyy-MM-dd HH:mm')}"/>
-    <script th:src="@{/scripts/chart/leak-show.js}"></script>
 </head>
 <body>
 <div class="container">
@@ -45,6 +44,8 @@
         </tbody>
     </table>
     <canvas id="chart" width="400" height="200"></canvas>
+    <script th:src="@{/scripts/lib/chart.js}"></script>
+    <script th:src="@{/scripts/chart/leak-show.js}"></script>
 </div>
 </body>
 </html>

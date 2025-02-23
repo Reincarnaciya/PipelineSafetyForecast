@@ -22,5 +22,4 @@ public class AuthDTO {
     @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[!@#$%^&*])[^\\s]+$", message = "Пароль должен содержать буквы, цифры и специальные символы")
     @Size(min = 8, max = 25, message = "Пароль должен содержать от 8 до 25 символов")
     private String password;
-
 }

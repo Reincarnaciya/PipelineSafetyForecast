@@ -1,4 +1,4 @@
-ocument.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function () {
     const startTime = document.querySelector('meta[name="start-time"]').content;
     const endTime = document.querySelector('meta[name="end-time"]').content;
 

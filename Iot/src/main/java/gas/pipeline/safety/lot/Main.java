@@ -10,6 +10,8 @@ import lombok.val;
 import java.io.IOException;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import static gas.pipeline.safety.lot.config.ApplicationConfig.*;
 
@@ -64,7 +66,7 @@ public class Main {
                 val sensorIdEncoded = URLEncoder.encode(ApplicationConfig.SENSOR_ID, StandardCharsets.UTF_8);
                 val pressureEncoded = URLEncoder.encode(String.valueOf(sensor.getPressure()), StandardCharsets.UTF_8);
                 val postDate = String.format(
-                        "{sensorId: %s, pressure: %s}",
+                        "{\"sensorId\": \"%s\", \"pressure\": \"%s\"}",
                         sensorIdEncoded, pressureEncoded
                 );
 
@@ -72,7 +74,11 @@ public class Main {
 
                 val postDataBytes = postDate.getBytes(StandardCharsets.UTF_8);
                 conn.setRequestProperty("Content-Length", String.valueOf(postDataBytes.length));
-                conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+                conn.setRequestProperty("Content-Type", "application/json");
+
+                // на сервере проверка времени отправки
+                String timestamp = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+                conn.setRequestProperty("X-Request-Timestamp", timestamp);
 
                 try (val os = conn.getOutputStream()) {
                     os.write(postDataBytes);

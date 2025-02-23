@@ -74,7 +74,7 @@ public class LeakPredictionsService extends BaseLeakService {
     }
 
     public void processNewReadings(SensorReading reading) {
-        sensorReadingRepo.save(reading);
+        //sensorReadingRepo.save(reading);
         leakModel.update(reading.getSensorId(), reading.isLeak(), reading.getPressure());
 
         generatePredictions(reading.getSensorId());
@@ -83,10 +83,10 @@ public class LeakPredictionsService extends BaseLeakService {
 
 
     void generatePredictions(String sensorId) {
-        double frequency = calculateFrequency(sensorId);
-        int totalPredictions = (int) (defaultPredictionsDays * frequency);
+        val frequency = calculateFrequency(sensorId);
+        val totalPredictions = (int) (defaultPredictionsDays * frequency);
 
-        for (int i = 0; i < totalPredictions; i++) {
+        for (int i = 1; i < totalPredictions + 1; i++) {
             val prediction = new LeakPrediction();
             prediction.setSensorId(sensorId);
             prediction.setTimestamp(LocalDateTime.now().plusMinutes(
@@ -107,7 +107,7 @@ public class LeakPredictionsService extends BaseLeakService {
 
 
     private void checkAlerts(String sensorId) {
-        double prob = leakModel.getLeakProbability(sensorId);
+        val prob = leakModel.getLeakProbability(sensorId);
         if (prob > 0.7) {
             log.warn("Leak prediction probability is higher than {} for sensor {}", prob, sensorId);
         }
