@@ -9,11 +9,13 @@ import gas.pipeline.safety.forecast.util.BayesianLeakModel;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.hibernate.mapping.Array;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -71,8 +73,10 @@ public class LeakPredictionsService extends BaseLeakService {
                         reading.getPressure()
                 );
             }
+            // обучение модели без сохранения расчетов
+            generatePredictions(sensorId);
+            checkAlerts(sensorId);
         }
-
     }
 
     public void processNewReadings(SensorReading reading) {
@@ -85,18 +89,23 @@ public class LeakPredictionsService extends BaseLeakService {
 
 
     void generatePredictions(String sensorId) {
+        predictionRepo.deleteAllInBatch();
+
         val frequency = calculateFrequency(sensorId);
         val totalPredictions = (int) (defaultPredictionsDays * frequency);
 
-        for (int i = 1; i < totalPredictions + 1; i++) {
+        val listPredictions = new ArrayList<LeakPredictionCache>(totalPredictions);
+
+        for (int i = 0; i < totalPredictions; i++) {
             val prediction = new LeakPredictionCache();
             prediction.setSensorId(sensorId);
             prediction.setTimestamp(LocalDateTime.now().plusMinutes(
-                    (long) (i * (1440 / frequency)) // минуты в день / частоту
+                    (long) ((i + 1) * (1440.0 / frequency)) // минуты в день / частоту
             ));
             prediction.setLeakProbability(leakModel.getLeakProbability(sensorId));
-            predictionRepo.save(prediction);
+            listPredictions.add(prediction);
         }
+        predictionRepo.saveAll(listPredictions);
     }
 
     double calculateFrequency(String sensorId) {
@@ -129,6 +138,4 @@ public class LeakPredictionsService extends BaseLeakService {
             log.warn("Leak prediction probability is higher than {} for sensor {}", prob, sensorId);
         }
     }
-
-
 }

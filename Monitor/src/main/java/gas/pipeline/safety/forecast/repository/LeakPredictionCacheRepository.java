@@ -16,5 +16,5 @@ public interface LeakPredictionCacheRepository extends JpaRepository<LeakPredict
             @Param("start") LocalDateTime start,
             @Param("end") LocalDateTime end
     );
-
+    
 }
